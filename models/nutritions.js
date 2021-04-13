@@ -6,6 +6,7 @@ const nutritionSchema = new mongoose.Schema({
     type: String, 
     title: String,
     description: String,
+    increase: Number, 
     date: { type: Date, default: Date.now} //in what time i ate the food
 });
 const nutritionModel = mongoose.model("nutritions", nutritionSchema);
