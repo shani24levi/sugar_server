@@ -80,7 +80,7 @@ const getDaylyGlucose = (req, res) => {
 
 const getHighGlucose = (req, res) => {
     try {
-        glucoseLevelsModel.find({ user: req._id , type: 'high'})
+        glucoseLevelsModel.find({ user: req._id, type: 'high' })
             .then(data => {
                 res.json(data);
             })
@@ -98,7 +98,7 @@ const getHighGlucose = (req, res) => {
 
 const getLowGlucose = (req, res) => {
     try {
-        glucoseLevelsModel.find({user: req._id, type: 'low' }).sort({ date_time: -1 })
+        glucoseLevelsModel.find({ user: req._id, type: 'low' }).sort({ date_time: -1 })
             .then(data => {
                 res.json(data);
             })
@@ -114,12 +114,45 @@ const getLowGlucose = (req, res) => {
     }
 }
 
-const getHighGlucoseOfUser = async(req, res) => {
+
+//for doctors or friends
+const getCurrGlucoseOfUser = (req, res) => {
     try {
         userModel.findOne({ _id: req._id }).populate('patients', 'user')
             .then(data => {
                 if (data.rule == 'doctor' && data.patients) {
-                    let found = userModel.findOne({ _id: req._id, patients: req.params.id}).populate('patients', 'user email');
+                    let found = userModel.findOne({ _id: req._id, patients: req.params.id }).populate('patients', 'user email');
+                    if (found) {
+                        glucoseLevelsModel.findOne({ user: req.params.id }).sort({ date_time: -1 })
+                            .then(data => {
+                                res.json(data);
+                            })
+                            .catch(err => {
+                                res.status(400).json(err.message);
+                            })
+                    }
+                    else
+                        res.status(404).json("user not authrized accses");
+                }
+                else
+                    res.status(404).json("user is not authrized to see detailes");
+            })
+            .catch(err => { res.status(400).json(err); })
+    }
+    catch (err) {
+        res.status(500).json({
+            status: 500,
+            message: err.message,
+        })
+    }
+}
+
+const getHighGlucoseOfUser = async (req, res) => {
+    try {
+        userModel.findOne({ _id: req._id }).populate('patients', 'user')
+            .then(data => {
+                if (data.rule == 'doctor' && data.patients) {
+                    let found = userModel.findOne({ _id: req._id, patients: req.params.id }).populate('patients', 'user email');
                     if (found) {
                         glucoseLevelsModel.find({ user: req.params.id, type: 'high' }).sort({ date_time: -1 })
                             .then(data => {
@@ -158,6 +191,52 @@ const getHighGlucoseOfUser = async(req, res) => {
         })
     }
 }
+
+const getLowGlucoseOfUser = async (req, res) => {
+    try {
+        userModel.findOne({ _id: req._id }).populate('patients', 'user')
+            .then(data => {
+                if (data.rule == 'doctor' && data.patients) {
+                    let found = userModel.findOne({ _id: req._id, patients: req.params.id }).populate('patients', 'user email');
+                    if (found) {
+                        glucoseLevelsModel.find({ user: req.params.id, type: 'low' }).sort({ date_time: -1 })
+                            .then(data => {
+                                res.json(data);
+                            })
+                            .catch(err => {
+                                res.status(400).json(err.message);
+                            })
+                    }
+                    else
+                        res.status(404).json("user not authrized accses");
+                }
+                // else if (data.rule == 'regular' && data.friends) {
+                //     const found = data.friends.find(element => element == req.params.id);
+                //     if (found) {
+                //         glucoseLevelsModel.find({ user: req.params.id, type: 'high' }).sort({ date_time: -1 })
+                //             .then(data => {
+                //                 res.json(data);
+                //             })
+                //             .catch(err => {
+                //                 res.status(400).json(err.message);
+                //             })
+                //     }
+                //     else
+                //         res.status(404).json("user not authrized accses");
+                // }
+                else
+                    res.status(404).json("user is not authrized to see detailes");
+            })
+            .catch(err => { res.status(400).json(err); })
+    }
+    catch (err) {
+        res.status(500).json({
+            status: 500,
+            message: err.message,
+        })
+    }
+}
+
 module.exports = {
     //use of the user
     getCurrGlucose,
@@ -170,14 +249,14 @@ module.exports = {
     getLowGlucose,
 
     // //use of the doctor or friend 
-    // getCurrGlucoseOfUser,
+    getCurrGlucoseOfUser,
     // getDaylyGlucoseOfUser,
     // getWeeklyGlucoseOfUser,
     // getMontlyGlucoseOfUser,
     // getAnnualGlucoseOfUser,
     // getGlucoseByTimeOfUser,
     getHighGlucoseOfUser,
-    // getLowGlucoseOfUser,
+    getLowGlucoseOfUser,
 
     //post for the user only 
     glucoseLevel
