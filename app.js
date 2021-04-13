@@ -9,7 +9,7 @@ const app = express();
 
 //Conect to DB
 const mongoCon = require("./dbs_connected/mongo_connected");
-//hellow
+
 //Middleware 
 app.use(logger('dev'));
 app.use(express.json());
@@ -38,7 +38,7 @@ const massagesRouter = require('./routes/massages');
 app.use('/users', usersRouter);
 app.use('/profiles', profilesRouter);
 //app.use('/alerms', alermsRouter);
-//app.use('/glucoselevels', glucoseLevelsRouter);
+app.use('/glucoselevels', glucoseLevelsRouter);
 //app.use('/nutritions', nutritionsRouter);
 //app.use('/massages', massagesRouter);
 
