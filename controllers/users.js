@@ -275,6 +275,54 @@ const getPatient = async (req, res) => {
   }
 }
 
+//when adding friend its added only to the list of the curr user
+// needed 2 calls one for mainUser and one for hisFriend
+const addFriend = async (req, res) => {
+  try {
+    let user = await userModel.findOne({ _id: req._id })
+    console.log('user', user.rule);
+    if (user.rule == 'regular') {
+      //find the friend
+      try {
+        let friend = await userModel.findOne({ _id: req.body.id })
+        //console.log('pationt',pationt._id);
+        if (friend) {
+          //chack thet the id is not allrady in the array
+          const found = user.patients.find(element => element == friend._id);
+          console.log(found);
+          if (found) {
+            res.status(400).json({ message: "user already in list" });
+          }
+          //else then push to array
+          user.friends.push(req.body.id);
+          user.save();
+          res.status(200).json(user);
+
+        }
+        else {
+          res.status(400).json(user);
+        }
+      }
+      catch (err) {
+        res.status(401).json(err.message);
+      }
+    }
+    else {
+      res.status(400).json({ message: "Authorization for physicians only", code: "no permission" });
+    }
+  }
+  catch (err) {
+    res.status(500).json({
+      status: 500,
+      message: err.message,
+    })
+  }
+}
+
+
+
+
+
 module.exports = {
   getUsers,
   getUser,
@@ -286,6 +334,8 @@ module.exports = {
   addPatient,
   deletePatient,
   getPatients,
-  getPatient
+  getPatient,
+
+  addFriend
 
 };

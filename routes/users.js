@@ -64,4 +64,9 @@ router.get("/patient/:id",authToken, async (req, res) => {
   control.getPatient(req, res);
 })
 
+router.post("/friend",authToken, async (req, res) => {
+  control.addFriend(req, res);
+})
+
+
 module.exports = router;
