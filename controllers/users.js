@@ -166,19 +166,15 @@ const addPatient = async (req, res) => {
       //find the pationt
       try {
         let pationt = await userModel.findOne({ _id: req.body.id })
-        //console.log('pationt',pationt);
+        //console.log('pationt',pationt._id);
         if (pationt) {
           //chack thet the id is not allrady in the array
-          // try {
-          //   let userValid = await userModel.find({ _id: req._id, patients: req.body.id })
-          //   if (userValid) {
-          //     res.status(400).json({ message: "user already in list" });
-          //   }
-          // }
-          // catch (err) {
-          //   res.status(401).json(err.message);
-          // }
-
+          const found = user.patients.find(element => element == pationt._id);
+          console.log(found);
+          if (found) {
+            res.status(400).json({ message: "user already in list" });
+          }
+          //else then push to array
           user.patients.push(req.body.id);
           user.save();
           res.status(200).json(user);

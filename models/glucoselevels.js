@@ -5,7 +5,7 @@ const glucoseLevelsSchema = new mongoose.Schema({
     returning_light_intensity: String,
     concentration: Number,
     glucose_level: Number,
-    type: String,                          //high, low, normal, pre-low , pre-high
+    type: String,                                   //high, low, normal, pre-low , pre-high
     date_time: { type: Date, default: Date.now}   // includes: year, month, day, hours, minutes, seconds, milliseconds
 });
 const glucoseLevelsModel = mongoose.model("glucoselevels", glucoseLevelsSchema);
